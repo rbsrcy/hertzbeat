@@ -51,17 +51,17 @@ import java.util.regex.Pattern;
 public class HistoryTdEngineDataStorage extends AbstractHistoryDataStorage {
 
     private static final Pattern SQL_SPECIAL_STRING_PATTERN = Pattern.compile("(\\\\)|(')");
-    private static final String INSERT_TABLE_DATA_SQL = "INSERT INTO %s USING %s TAGS (%s) VALUES %s";
+    private static final String INSERT_TABLE_DATA_SQL = "INSERT INTO `%s` USING `%s` TAGS (%s) VALUES %s";
     private static final String CREATE_SUPER_TABLE_SQL = "CREATE STABLE IF NOT EXISTS `%s` %s TAGS (monitor BIGINT)";
     private static final String NO_SUPER_TABLE_ERROR = "Table does not exist";
     private static final String QUERY_HISTORY_WITH_INSTANCE_SQL
-            = "SELECT ts, instance, `%s` FROM %s WHERE instance = '%s' AND ts >= now - %s order by ts desc";
+            = "SELECT ts, instance, `%s` FROM `%s` WHERE instance = '%s' AND ts >= now - %s order by ts desc";
     private static final String QUERY_HISTORY_SQL
-            = "SELECT ts, instance, `%s` FROM %s WHERE ts >= now - %s order by ts desc";
+            = "SELECT ts, instance, `%s` FROM `%s` WHERE ts >= now - %s order by ts desc";
     private static final String QUERY_HISTORY_INTERVAL_WITH_INSTANCE_SQL
-            = "SELECT first(`ts`), first(`%s`), avg(`%s`), min(`%s`), max(`%s`) FROM %s WHERE instance = '%s' AND ts >= now - %s interval(4h)";
+            = "SELECT first(`ts`), first(`%s`), avg(`%s`), min(`%s`), max(`%s`) FROM `%s` WHERE instance = '%s' AND ts >= now - %s interval(4h)";
     private static final String QUERY_INSTANCE_SQL
-            = "SELECT DISTINCT instance FROM %s WHERE ts >= now - 1w";
+            = "SELECT DISTINCT instance FROM `%s` WHERE ts >= now - 1w";
 
     private static final String TABLE_NOT_EXIST
             = "Table does not exist";
@@ -258,6 +258,10 @@ public class HistoryTdEngineDataStorage extends AbstractHistoryDataStorage {
             ResultSet resultSet = statement.executeQuery(selectSql);
             while (resultSet.next()) {
                 Timestamp ts = resultSet.getTimestamp(1);
+                if (ts == null) {
+                    log.error("warehouse tdengine query result timestamp is null, ignore. {}.", selectSql);
+                    continue;
+                }
                 String instanceValue = resultSet.getString(2);
                 if (instanceValue == null || "".equals(instanceValue)) {
                     instanceValue = "";

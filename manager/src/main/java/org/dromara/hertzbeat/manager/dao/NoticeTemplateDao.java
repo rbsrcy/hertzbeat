@@ -15,33 +15,18 @@
  * limitations under the License.
  */
 
-package org.dromara.hertzbeat.common.entity.job.protocol;
+package org.dromara.hertzbeat.manager.dao;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.dromara.hertzbeat.common.entity.manager.NoticeTemplate;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 /**
- * 使用socket实现的tcp或ucp进行服务端口可用性探测
- * @author tomsun28
+ * NoticeTemplate数据库操作
  *
+ * @author Eden
  */
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class TcpUdpProtocol {
-    /**
-     * 具体协议类型 tcp, udp
-     */
-    private String protocol;
-    /**
-     * 对端主机ip或域名
-     */
-    private String host;
-    /**
-     * 端口号
-     */
-    private Integer port;
+public interface NoticeTemplateDao extends JpaRepository<NoticeTemplate, Long>, JpaSpecificationExecutor<NoticeTemplate> {
+    
+
 }
